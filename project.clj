@@ -1,4 +1,4 @@
-(defproject org.clojars.jj/vertx-pg-client-async-boa-adapter "1.0.1-SNAPSHOT"
+(defproject org.clojars.jj/vertx-pg-client-async-boa-adapter "1.0.1"
   :description "Async boa adapter for vertx pg client"
   :url "https://github.com/ruroru/vertx-pg-client-async-boa-adapter"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
