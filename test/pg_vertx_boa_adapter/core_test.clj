@@ -5,7 +5,8 @@
             [jj.sql.boa.query.vertx-pg :as vertx-adapter]
             )
   (:import (io.vertx.core Vertx)
-           (io.vertx.pgclient PgBuilder PgConnectOptions)))
+           (io.vertx.pgclient PgBuilder PgConnectOptions)
+           (java.util.function Consumer)))
 
 (defn create-pool []
   (let [connect-opts (-> (PgConnectOptions.)
@@ -75,3 +76,4 @@
                          (is (= 2 (count (:ok result))))
                          (is (= "Alice" (:name (first (:ok result)))))
                          (is (= "Bob"   (:name (second (:ok result)))))))))))
+
