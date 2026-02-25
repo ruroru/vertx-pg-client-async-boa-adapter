@@ -2,7 +2,8 @@
   (:require [jj.sql.boa.async-query :as boa-query])
   (:import (io.vertx.core Handler)
            (io.vertx.sqlclient Row RowSet SqlClient Tuple)
-           (io.vertx.sqlclient.desc ColumnDescriptor)))
+           (io.vertx.sqlclient.desc ColumnDescriptor)
+           (java.util.function Consumer)))
 
 (defn- question-marks->positional
   [^String sql]
@@ -35,6 +36,11 @@
           (recur it (conj! result m)))
         (persistent! result)))))
 
+(defn- invoke-respond [respond data]
+  (if (instance? Consumer respond)
+    (.accept ^Consumer respond data)
+    (respond data)))
+
 (defrecord VertxPgAdapter []
   boa-query/AsyncBoaQuery
   (parameterless-query [_ client sql respond raise]
@@ -42,21 +48,20 @@
         (.execute)
         (.onSuccess (reify Handler
                       (handle [_ row-set]
-                        (respond (rows->maps row-set)))))
+                        (invoke-respond respond (rows->maps row-set)))))
         (.onFailure (reify Handler
                       (handle [_ throwable]
                         (raise throwable))))))
   (query [_ client sql params respond raise]
     (let [pg-sql (question-marks->positional sql)
-          tuple (Tuple/from ^"[Ljava.lang.Object;" (into-array Object params))
-          ]
+          tuple (Tuple/from ^"[Ljava.lang.Object;" (into-array Object params))]
       (-> (.preparedQuery ^SqlClient client pg-sql)
           (.execute tuple)
           (.onSuccess (reify Handler
                         (handle [_ row-set]
-                          (respond (rows->maps row-set)))))
+                          (invoke-respond respond (rows->maps row-set)))))
           (.onFailure (reify Handler
                         (handle [_ throwable]
                           (raise throwable))))))))
-(defn ->VertxPgAdapter [] (VertxPgAdapter.))
 
+(defn ->VertxPgAdapter [] (VertxPgAdapter.))
