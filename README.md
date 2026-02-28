@@ -1,14 +1,42 @@
 # pg-vertx-boa-adapter
 
-A Clojure library designed to ... well, that part is up to you.
+## Installation 
+Add adapter to dependency list
+
+```clojure
+[org.clojars.jj/vertx-pg-client-async-boa-adapter "1.0.1"]
+```
+
 
 ## Usage
 
-FIXME
+```clojure
+(def data-source
+  (let [connect-opts (-> (PgConnectOptions.)
+                         (.setHost "localhost")
+                         (.setPort 54323)
+                         (.setDatabase "postgres")
+                         (.setUser "postgres")
+                         (.setPassword "postgres"))
+        vertx (Vertx/vertx)]
+    (-> (PgBuilder/pool)
+        (.connectingTo connect-opts)
+        (.using vertx)
+        (.build))))
+
+(let [async-boa-fn (boa/build-async-query (vertx-adapter/->VertxPgAdapter) "select-all.sql")]
+  (async-boa-fn data-source
+                 (fn [result]
+                   (println result))
+                 (fn [err]
+                   (println "error")))
+  )
+
+```
 
 ## License
 
-Copyright © 2026 FIXME
+Copyright © 2026 [ruroru](https://github.com/ruroru)
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
