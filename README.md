@@ -4,7 +4,7 @@
 Add adapter to dependency list
 
 ```clojure
-[org.clojars.jj/vertx-pg-client-async-boa-adapter "1.0.1"]
+[org.clojars.jj/vertx-pg-client-async-boa-adapter "1.0.2"]
 ```
 
 
