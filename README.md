@@ -24,14 +24,9 @@ Add adapter to dependency list
         (.using vertx)
         (.build))))
 
-(let [async-boa-fn (boa/build-async-query (vertx-adapter/->VertxPgAdapter) "select-all.sql")]
-  (async-boa-fn data-source
-                 (fn [result]
-                   (println result))
-                 (fn [err]
-                   (println "error")))
-  )
-
+(let [insert-fn (boa/build-query (vertx-adapter/->VertxPgAdapter) "insert.sql")
+      future    (insert-fn data-source ["Alice" "alice@example.com"])]
+  (println (.get future)))
 ```
 
 ## License
